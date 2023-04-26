@@ -1,22 +1,39 @@
-import 'source-map-support/register'
-
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import * as middy from 'middy'
-import { cors } from 'middy/middlewares'
-
-import { getTodosForUser as getTodosForUser } from '../../businessLogic/todos'
+import 'source-map-support/register';
+import * as AWS from 'aws-sdk';
+import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda';
 import { getUserId } from '../utils';
 
-// TODO: Get all TODO items for a current user
-export const handler = middy(
-  async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    // Write your code here
-    const todos = '...'
+const docClient = new AWS.DynamoDB.DocumentClient();
+const todoTable = process.env.TODOS_TABLE;
 
-    return undefined
+export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
-handler.use(
-  cors({
-    credentials: true
-  })
-)
+  console.log('Processing event: ', event)
+
+  const userId = getUserId(event)
+
+  const result = await docClient.query(
+    {
+      TableName: todoTable,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      },
+    }).promise()
+
+  const items = result.Items
+
+  items.forEach(item => delete item['userId'])
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    },
+    body: JSON.stringify({
+      items
+    })
+  }
+  
+}

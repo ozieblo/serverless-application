@@ -1,11 +1,11 @@
 // TODO: Once your application is deployed, copy an API id here so that the frontend could interact with it
-const apiId = '...'
+const apiId = 'gwm6saf2r8'
 export const apiEndpoint = `https://${apiId}.execute-api.us-east-1.amazonaws.com/dev`
 
 export const authConfig = {
   // TODO: Create an Auth0 application and copy values from it into this map. For example:
   // domain: 'dev-nd9990-p4.us.auth0.com',
-  domain: '...',            // Auth0 domain
-  clientId: '...',          // Auth0 client id
+  domain: 'dev-kphwqgjn0uy60o5g.us.auth0.com',            // Auth0 domain
+  clientId: 'yrgzNc06DM6crr5lh8Rph08vjDlO0gFT',          // Auth0 client id
   callbackUrl: 'http://localhost:3000/callback'
 }
